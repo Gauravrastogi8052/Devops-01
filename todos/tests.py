@@ -2,5 +2,5 @@ from django.test import TestCase
 
 # Create your tests here.
 
-class test_Gaurav12768():
+class test_Gaurav12():
     pass

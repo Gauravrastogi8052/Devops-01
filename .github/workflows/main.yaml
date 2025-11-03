@@ -53,15 +53,19 @@ jobs:
           script: |
             cd $APP_DIR
 
-            # Install required packages
-            sudo apt-get update
-            sudo apt-get install -y python3-venv python3-pip psmisc
-
-            # Create virtual environment (skip if exists)
+            # Create virtual environment if not exists
             python3 -m venv .venv || true
 
-            # Upgrade pip and install requirements inside virtualenv
+            # Upgrade pip using virtualenv python
             ./.venv/bin/pip install --upgrade pip
+
+            # Ensure requirements.txt exists
+            if [ ! -f requirements.txt ]; then
+              echo "Error: requirements.txt not found!"
+              exit 1
+            fi
+
+            # Install dependencies
             ./.venv/bin/pip install -r requirements.txt
 
             # Ensure logs folder exists
@@ -70,7 +74,7 @@ jobs:
             # Kill any process running on port 8000
             fuser -k 8000/tcp || true
 
-            # Start Django server in background using virtualenv python
+            # Start Django server using virtualenv python
             nohup ./.venv/bin/python manage.py runserver 0.0.0.0:8000 > logs/server.log 2>&1 &
 
             echo "Deployment complete and server restarted!"
